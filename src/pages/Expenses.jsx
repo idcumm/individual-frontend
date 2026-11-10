@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getExpenses, addExpense, deleteExpense } from '../api'
 
-const emptyForm = { amount: '', category: '', date: '', description: '' }
+const emptyForm = { amount: '', type: 'EXPENSE', category: '', date: '', description: '' }
 
 function Expenses() {
   const [expenses, setExpenses] = useState([])
@@ -46,6 +46,10 @@ function Expenses() {
 
       <form onSubmit={handleSubmit}>
         <input name="amount" type="number" step="0.01" placeholder="Amount" value={form.amount} onChange={handleChange} required />
+        <select name="type" value={form.type} onChange={handleChange}>
+          <option value="EXPENSE">Expense</option>
+          <option value="INCOME">Income</option>
+        </select>
         <input name="category" placeholder="Category" value={form.category} onChange={handleChange} required />
         <input name="date" type="date" value={form.date} onChange={handleChange} required />
         <input name="description" placeholder="Description" value={form.description} onChange={handleChange} />
