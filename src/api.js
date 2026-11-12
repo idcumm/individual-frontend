@@ -20,3 +20,13 @@ export async function deleteExpense(id) {
   const res = await fetch(`${URL}/${id}`, { method: 'DELETE' })
   if (!res.ok) throw new Error('Error deleting expense')
 }
+
+export async function editExpense(id, expense) {
+  const res = await fetch(`${URL}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(expense),
+  })
+  if (!res.ok) throw new Error('Error updating expense')
+  return res.json()
+  }

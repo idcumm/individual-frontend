@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getExpenses, addExpense, deleteExpense } from '../api'
+import { getExpenses, addExpense, deleteExpense, editExpense } from '../api'
 
 const emptyForm = { amount: '', type: 'EXPENSE', category: '', date: '', description: '' }
 
@@ -7,6 +7,7 @@ function Expenses() {
   const [expenses, setExpenses] = useState([])
   const [form, setForm] = useState(emptyForm)
   const [error, setError] = useState(null)
+  const [editingId, setEditingId] = useState(null)
 
   useEffect(() => {
     getExpenses()
@@ -21,8 +22,14 @@ function Expenses() {
   async function handleSubmit(e) {
     e.preventDefault()
     try {
-      const created = await addExpense(form)
-      setExpenses([...expenses, created])
+      if (editingId === null) {
+        const created = await addExpense(form)
+        setExpenses([...expenses, created])
+      } else {
+        const edited = await editExpense(editingId, form)
+        setExpenses(expenses.map((expense) => (expense.id === editingId ? edited : expense)))
+        setEditingId(null)
+      }
       setForm(emptyForm)
     } catch (err) {
       setError(err.message)
@@ -33,9 +40,20 @@ function Expenses() {
     try {
       await deleteExpense(id)
       setExpenses(expenses.filter((expense) => expense.id !== id))
+      if (editingId === id) handleCancel()
     } catch (err) {
       setError(err.message)
     }
+  }
+
+  function handleEdit(expense) {
+    setForm(expense)
+    setEditingId(expense.id)
+  }
+
+  function handleCancel() {
+    setForm(emptyForm)
+    setEditingId(null)
   }
 
   return (
@@ -53,7 +71,10 @@ function Expenses() {
         <input name="category" placeholder="Category" value={form.category} onChange={handleChange} required />
         <input name="date" type="date" value={form.date} onChange={handleChange} required />
         <input name="description" placeholder="Description" value={form.description} onChange={handleChange} />
-        <button type="submit">Add</button>
+        <button type="submit">{editingId === null ? 'Add' : 'Save'}</button>
+        {editingId !== null && (
+          <button type="button" onClick={handleCancel}>Cancel</button>
+        )}
       </form>
 
       <table>
@@ -74,6 +95,7 @@ function Expenses() {
               <td>{expense.description}</td>
               <td>{expense.amount} €</td>
               <td>
+                <button onClick={() => handleEdit(expense)}>Edit</button>
                 <button onClick={() => handleDelete(expense.id)}>Delete</button>
               </td>
             </tr>
