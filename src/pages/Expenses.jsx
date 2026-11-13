@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { getExpenses, addExpense, deleteExpense, editExpense } from '../api'
 
+const CATEGORIES = ['Food', 'Rent', 'Transport', 'Leisure', 'Health', 'Education', 'Salary', 'Other']
+
 const emptyForm = { amount: '', type: 'EXPENSE', category: '', date: '', description: '' }
 
 function Expenses() {
@@ -68,7 +70,13 @@ function Expenses() {
           <option value="EXPENSE">Expense</option>
           <option value="INCOME">Income</option>
         </select>
-        <input name="category" placeholder="Category" value={form.category} onChange={handleChange} required />
+        <select name="category" value={form.category} onChange={handleChange} required>
+          <option value="" disabled>Category</option>
+          {/* keep old free-text categories selectable when editing */}
+          {(CATEGORIES.includes(form.category) || !form.category ? CATEGORIES : [...CATEGORIES, form.category]).map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
         <input name="date" type="date" value={form.date} onChange={handleChange} required />
         <input name="description" placeholder="Description" value={form.description} onChange={handleChange} />
         <button type="submit">{editingId === null ? 'Add' : 'Save'}</button>
