@@ -74,3 +74,11 @@ td {
 .error {
   color: red;
 }
+
+.income {
+  color: green
+}
+
+.expense {
+  color: red
+}

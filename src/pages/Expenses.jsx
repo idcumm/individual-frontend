@@ -3,11 +3,16 @@ import { getExpenses, addExpense, deleteExpense, editExpense } from '../api'
 
 const CATEGORIES = ['Food', 'Rent', 'Transport', 'Leisure', 'Health', 'Education', 'Salary', 'Other']
 
-const emptyForm = { amount: '', type: 'EXPENSE', category: '', date: '', description: '' }
+function newForm() {
+  const d = new Date()
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
+  return { amount: '', type: 'EXPENSE', category: '', date: d.toISOString().slice(0,
+16), description: '' }
+}
 
 function Expenses() {
   const [expenses, setExpenses] = useState([])
-  const [form, setForm] = useState(emptyForm)
+  const [form, setForm] = useState(newForm)
   const [error, setError] = useState(null)
   const [editingId, setEditingId] = useState(null)
 
@@ -31,7 +36,7 @@ function Expenses() {
         setExpenses(expenses.map((expense) => (expense.id === editingId ? edited : expense)))
         setEditingId(null)
       }
-      setForm(emptyForm)
+      setForm(newForm())
     } catch (err) {
       setError(err.message)
     }
@@ -53,9 +58,11 @@ function Expenses() {
   }
 
   function handleCancel() {
-    setForm(emptyForm)
+    setForm(newForm())
     setEditingId(null)
   }
+
+  const sorted = [...expenses].sort((a, b) => b.date.localeCompare(a.date))
 
   return (
     <div>
@@ -76,7 +83,7 @@ function Expenses() {
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
-        <input name="date" type="date" value={form.date} onChange={handleChange} required />
+        <input name="date" type="datetime-local" value={form.date} onChange={handleChange} required />
         <input name="description" placeholder="Description" value={form.description} onChange={handleChange} />
         <button type="submit">{editingId === null ? 'Add' : 'Save'}</button>
         {editingId !== null && (
@@ -95,12 +102,12 @@ function Expenses() {
           </tr>
         </thead>
         <tbody>
-          {expenses.map((expense) => (
+          {sorted.map((expense) => (
             <tr key={expense.id}>
-              <td>{expense.date}</td>
+              <td>{expense.date.replace('T', ' ').slice(0, 16)}</td>
               <td>{expense.category}</td>
               <td>{expense.description}</td>
-              <td>{expense.type === 'INCOME' ? '+' : '-'}{expense.amount} €</td>
+              <td className={expense.type === 'INCOME' ? 'income' : 'expense'} >{expense.type === 'INCOME' ? '+' : '-'}{expense.amount} €</td>
               <td>
                 <button onClick={() => handleEdit(expense)}>Edit</button>
                 <button onClick={() => handleDelete(expense.id)}>Delete</button>
