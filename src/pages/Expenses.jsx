@@ -12,9 +12,7 @@ function Expenses() {
   const [editingId, setEditingId] = useState(null)
 
   useEffect(() => {
-    getExpenses()
-      .then(setExpenses)
-      .catch((err) => setError(err.message))
+    getExpenses().then(setExpenses).catch((err) => setError(err.message))
   }, [])
 
   function handleChange(e) {
@@ -22,6 +20,7 @@ function Expenses() {
   }
 
   async function handleSubmit(e) {
+    setError(null)
     e.preventDefault()
     try {
       if (editingId === null) {
@@ -101,7 +100,7 @@ function Expenses() {
               <td>{expense.date}</td>
               <td>{expense.category}</td>
               <td>{expense.description}</td>
-              <td>{expense.amount} €</td>
+              <td>{expense.type === 'INCOME' ? '+' : '-'}{expense.amount} €</td>
               <td>
                 <button onClick={() => handleEdit(expense)}>Edit</button>
                 <button onClick={() => handleDelete(expense.id)}>Delete</button>
