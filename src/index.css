@@ -82,3 +82,41 @@ td {
 .expense {
   color: red
 }
+
+.day-header {
+font-size: 12px
+}
+
+.transaction {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 10px;
+}
+
+.transaction-icon {
+  width: 24px;
+}
+
+.transaction-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.transaction-amount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.transactions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tag {
+  font-size: 12px;
+}
